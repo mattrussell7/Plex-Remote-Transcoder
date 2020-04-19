@@ -37,16 +37,22 @@ except:
 
 log = logging.getLogger("prt")
 
-if sys.platform == "darwin":
+#if sys.platform == "darwin":
     # OS X
     TRANSCODER_DIR = "/Applications/Plex Media Server.app/Contents/"
     SETTINGS_PATH  = "~/Library/Preferences/com.plexapp.plexmediaserver"
-elif sys.platform.startswith('linux'):
+#elif sys.platform.startswith('linux'):
     # Linux
-    TRANSCODER_DIR = "/usr/lib/plexmediaserver/"
-    SETTINGS_PATH  = "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Preferences.xml"
-else:
-    raise NotImplementedError("This platform is not yet supported")
+TRANSCODER_DIR = "/usr/lib/plexmediaserver/"
+SETTINGS_PATH  = "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Preferences.xml"
+ENV_VARS = {
+        'LD_LIBRARY_PATH':      "/usr/lib/plexmediaserver:$LD_LIBRARY_PATH",
+        'FFMPEG_EXTERNAL_LIBS': "/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Codecs/2c361e4-1071-linux-ubuntu-x86_64/",
+        'XDG_CACHE_HOME':       "/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Cache/",
+        'XDG_DATA_HOME':        "/usr/lib/plexmediaserver/Resources/"
+}
+#else:
+#    raise NotImplementedError("This platform is not yet supported")
 
 DEFAULT_CONFIG = {
     "ipaddress": "",
@@ -252,8 +258,9 @@ def build_env(host=None):
     if backslashcheck is not None:
         ffmpeg_path_fixed = ffmpeg_path.replace('\\','')
         os.environ["FFMPEG_EXTERNAL_LIBS"] = str(ffmpeg_path_fixed)
-
-    envs = ["export %s=%s" % (k, pipes.quote(v)) for k,v in os.environ.items()]
+		for k, v in ENV_VARS.items():
+        os.environ[k] = v
+    envs = ["export %s=%s" % (k, pipes.quote(v)) for k,v in ENV_VARS.items()]
     envs.append("export PRT_ID=%s" % uuid.uuid1().hex)
     return ";".join(envs)
 
