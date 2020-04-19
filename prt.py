@@ -374,35 +374,36 @@ def transcode_remote():
                 }
         except Exception, e:
             log.error("Error retreiving host list via '%s': %s" % (config["servers_script"], str(e)))
+            
+    #return to picking first host
+    hostname, host = config["servers"].items()[0]
 
-    hostname, host = None, None
+    # Let's not try to load-balance
+    #min_load = None
+    #for hostname, host in servers.items():
 
-    # Let's try to load-balance
-    min_load = None
-    for hostname, host in servers.items():
+        #log.debug("Getting load for host '%s'" % hostname)
+        #load = get_system_load_remote(hostname, host["port"], host["user"])
 
-        log.debug("Getting load for host '%s'" % hostname)
-        load = get_system_load_remote(hostname, host["port"], host["user"])
+        #if not load:
+            #If no load is returned, then it is likely that the host
+            #is offline or unreachable
+            #log.debug("Couldn't get load for host '%s'" % hostname)
+            #continue
 
-        if not load:
-            # If no load is returned, then it is likely that the host
-            # is offline or unreachable
-            log.debug("Couldn't get load for host '%s'" % hostname)
-            continue
+        #log.debug("Log for '%s': %s" % (hostname, str(load)))
 
-        log.debug("Log for '%s': %s" % (hostname, str(load)))
+        #XXX: Use more that just 1-minute load?
+        #if min_load is None or min_load[1] > load[0]:
+            #min_load = (hostname, load[0],)
 
-        # XXX: Use more that just 1-minute load?
-        if min_load is None or min_load[1] > load[0]:
-            min_load = (hostname, load[0],)
-
-    if min_load is None:
-        log.info("No hosts found...using local")
-        return transcode_local()
+    #if min_load is None:
+        #log.info("No hosts found...using local")
+        #return transcode_local()
 
     # Select lowest-load host
-    log.info("Host with minimum load is '%s'" % min_load[0])
-    hostname, host = min_load[0], servers[min_load[0]]
+    #log.info("Host with minimum load is '%s'" % min_load[0])
+    #hostname, host = min_load[0], servers[min_load[0]]
 
     log.info("Using transcode host '%s'" % hostname)
 
