@@ -39,8 +39,8 @@ log = logging.getLogger("prt")
 
 #if sys.platform == "darwin":
     # OS X
-    TRANSCODER_DIR = "/Applications/Plex Media Server.app/Contents/"
-    SETTINGS_PATH  = "~/Library/Preferences/com.plexapp.plexmediaserver"
+TRANSCODER_DIR = "/Applications/Plex Media Server.app/Contents/"
+SETTINGS_PATH  = "~/Library/Preferences/com.plexapp.plexmediaserver"
 #elif sys.platform.startswith('linux'):
     # Linux
 TRANSCODER_DIR = "/usr/lib/plexmediaserver/"
