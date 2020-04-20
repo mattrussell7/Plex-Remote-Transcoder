@@ -39,15 +39,15 @@ log = logging.getLogger("prt")
 
 #if sys.platform == "darwin":
     # OS X
-    #TRANSCODER_DIR = "/Applications/Plex Media Server.app/Contents/"
-    #SETTINGS_PATH  = "~/Library/Preferences/com.plexapp.plexmediaserver"
-    #elif sys.platform.startswith('linux'):
+#TRANSCODER_DIR = "/Applications/Plex Media Server.app/Contents/"
+#SETTINGS_PATH  = "~/Library/Preferences/com.plexapp.plexmediaserver"
+#elif sys.platform.startswith('linux'):
     # Linux
 TRANSCODER_DIR = "/usr/lib/plexmediaserver/"
 SETTINGS_PATH  = "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Preferences.xml"
 ENV_VARS = {
         'LD_LIBRARY_PATH':      "/usr/lib/plexmediaserver:$LD_LIBRARY_PATH",
-        'FFMPEG_EXTERNAL_LIBS': "/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Codecs/2c361e4-1071-linux-ubuntu-x86_64/",
+#'FFMPEG_EXTERNAL_LIBS': "/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Codecs/2c361e4-1071-linux-ubuntu-x86_64/",
         'XDG_CACHE_HOME':       "/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Cache/",
         'XDG_DATA_HOME':        "/usr/lib/plexmediaserver/Resources/"
 }
@@ -262,6 +262,7 @@ def build_env(host=None):
         os.environ[k] = v
     envs = ["export %s=%s" % (k, pipes.quote(v)) for k,v in ENV_VARS.items()]
     envs.append("export PRT_ID=%s" % uuid.uuid1().hex)
+    envs.append("export FFMPEG_EXTERNAL_LIBS=%s" % ffmpeg_path_fixed)
     return ";".join(envs)
 
 
@@ -381,14 +382,10 @@ def transcode_remote():
                 }
         except Exception, e:
             log.error("Error retreiving host list via '%s': %s" % (config["servers_script"], str(e)))
-
+            
     #return to picking first host
     hostname, host = config["servers"].items()[0]
-    load = get_system_load_remote(hostname, host["port"], host["user"])
-    if not load:
-        log.debug ("Couldn't get load for host '%s'" % hostname)
-        log.info ("No hosts found...using local")
-        return transcode_local()
+
     # Let's not try to load-balance
     #min_load = None
     #for hostname, host in servers.items():
@@ -629,13 +626,13 @@ def usage():
     print "Usage:\n"
     print "  %s [options]\n" % os.path.basename(sys.argv[0])
     print (
-        "Options:\n\n"
-        "  usage, help, -h, ?    Show usage page\n"
-        "  get_load              Show the load of the system\n"
-        "  get_cluster_load      Show the load of all systems in the cluster\n"
-        "  install               Install PRT for the first time and then sets up configuration\n"
-        "  overwrite             Fix PRT after PMS has had a version update breaking PRT\n"
-        "  add_host              Add an extra host to the list of slaves PRT is to use\n"
+        "Options:\n\n" 
+        "  usage, help, -h, ?    Show usage page\n" 
+        "  get_load              Show the load of the system\n" 
+        "  get_cluster_load      Show the load of all systems in the cluster\n" 
+        "  install               Install PRT for the first time and then sets up configuration\n" 
+        "  overwrite             Fix PRT after PMS has had a version update breaking PRT\n" 
+        "  add_host              Add an extra host to the list of slaves PRT is to use\n" 
         "  remove_host           Removes a host from the list of slaves PRT is to use\n"
         "  sessions              Display current sessions\n"
         "  check_config          Checks the current configuration for errors\n")
@@ -739,3 +736,4 @@ def main():
     else:
         usage()
         sys.exit(-1)
+
