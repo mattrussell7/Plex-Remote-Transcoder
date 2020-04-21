@@ -257,7 +257,7 @@ def build_env(host=None):
     backslashcheck = re.search(r'\\', ffmpeg_path)
     if backslashcheck is not None:
         ffmpeg_path_fixed = ffmpeg_path.replace('\\','')
-    else 
+    else:
         ffmpeg_path_fixed = ffmpeg_path
     for k, v in ENV_VARS.items():
         os.environ[k] = v
