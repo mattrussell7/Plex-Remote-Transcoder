@@ -332,9 +332,9 @@ def transcode_remote():
     # FIX: This is (temporary?) fix for the EasyAudioEncoder (EAE) which uses a
     #      hardcoded path in /tmp.  If we find that EAE is being used then we
     #      force transcoding on the master
-    if 'eae_prefix' in ' '.join(args):
-        log.info("Found EAE is being used...forcing local transcode")
-        return transcode_local()
+    #if 'eae_prefix' in ' '.join(args):
+    #    log.info("Found EAE is being used...forcing local transcode")
+    #    return transcode_local()
 
     # Check to see if we need to call a user-script to replace/modify the file path
     if config.get("path_script", None):
